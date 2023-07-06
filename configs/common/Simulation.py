@@ -87,6 +87,9 @@ def setCPUClass(options):
         warn("Memory mode will be changed to atomic_noncaching")
         test_mem_mode = "atomic_noncaching"
 
+    print('---------------------------------------')
+    print(test_mem_mode)
+
     return (TmpClass, test_mem_mode, CPUClass)
 
 
@@ -276,19 +279,22 @@ def scriptCheckpoints(options, maxtick, cptdir):
 
 
 def benchCheckpoints(options, maxtick, cptdir):
-    exit_event = m5.simulate(maxtick - m5.curTick())
+    exit_event = m5.simulate()
     exit_cause = exit_event.getCause()
-
+    print("sdsdhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+    print(exit_event)
+    print(exit_cause)
     num_checkpoints = 0
     max_checkpoints = options.max_checkpoints
 
     while exit_cause == "checkpoint":
+        print(exit_cause)
         m5.checkpoint(joinpath(cptdir, "cpt.%d"))
         num_checkpoints += 1
         if num_checkpoints == max_checkpoints:
             exit_cause = "maximum %d checkpoints dropped" % max_checkpoints
             break
-
+        print("sdsdhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
         exit_event = m5.simulate(maxtick - m5.curTick())
         exit_cause = exit_event.getCause()
 
@@ -451,7 +457,9 @@ def repeatSwitch(testsys, repeat_switch_cpu_list, maxtick, switch_freq):
         if exit_cause != "simulate() limit reached":
             return exit_event
 
+        print("222222")
         m5.switchCpus(testsys, repeat_switch_cpu_list)
+        print("222222 - D")
 
         tmp_cpu_list = []
         for old_cpu, new_cpu in repeat_switch_cpu_list:
@@ -482,6 +490,7 @@ def run(options, root, testsys, cpu_class):
 
     if options.repeat_switch and options.take_checkpoints:
         fatal("Can't specify both --repeat-switch and --take-checkpoints")
+
 
     # Setup global stat filtering.
     stat_root_simobjs = []
@@ -583,7 +592,26 @@ def run(options, root, testsys, cpu_class):
             repeat_switch_cpu_list = [
                 (testsys.cpu[i], repeat_switch_cpus[i]) for i in range(np)
             ]
+# Hans - start     
+    print("switching")
+    switch_cpus = [
+                    TimingSimpleCPU(switched_out=True, cpu_id=(i)) for i in range(np)
+                ]
+    print(switch_cpus)
+    for i in range(np):
+        switch_cpus[i].system = testsys
+        switch_cpus[i].workload = testsys.cpu[i].workload
+        switch_cpus[i].clk_domain = testsys.cpu[i].clk_domain
+        switch_cpus[i].isa = testsys.cpu[i].isa
 
+        # testsys.cpu[i].max_insts_any_thread = 1
+
+        switch_cpus[i].createThreads()
+
+    testsys.switch_cpus = switch_cpus
+    switch_cpu_list = [(testsys.cpu[i], switch_cpus[i]) for i in range(np)]
+    print(switch_cpu_list)
+# Hans - end 
     if options.standard_switch:
         switch_cpus = [
             TimingSimpleCPU(switched_out=True, cpu_id=(i)) for i in range(np)
@@ -744,7 +772,10 @@ def run(options, root, testsys, cpu_class):
             exit_event = m5.simulate(10000)
         print("Switched CPUS @ tick %s" % (m5.curTick()))
 
+        print("333333")
+        print(switch_cpu_list)
         m5.switchCpus(testsys, switch_cpu_list)
+        print("333333 - D")
 
         if options.standard_switch:
             print(
@@ -762,7 +793,9 @@ def run(options, root, testsys, cpu_class):
                 "Simulation ends instruction count:%d"
                 % (testsys.switch_cpus_1[0].max_insts_any_thread)
             )
+            print("444444")
             m5.switchCpus(testsys, switch_cpu_list1)
+            print("444444 - D")
 
     # If we're taking and restoring checkpoints, use checkpoint_dir
     # option only for finding the checkpoints to restore from.  This
@@ -805,7 +838,13 @@ def run(options, root, testsys, cpu_class):
             )
         else:
             exit_event = benchCheckpoints(options, maxtick, cptdir)
-
+            if exit_event:
+                m5.stats.reset()
+                print("111111")
+                m5.switchCpus(testsys, switch_cpu_list)
+                print("111111 - D")
+    exit_event = m5.simulate()            
+    m5.stats.dump()
     print(
         "Exiting @ tick %i because %s" % (m5.curTick(), exit_event.getCause())
     )
