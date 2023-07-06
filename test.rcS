@@ -1,0 +1,5 @@
+#! /bin/sh
+echo "executing hello world";
+m5 exit;
+echo "Running on switch CPU";
+m5 exit;
