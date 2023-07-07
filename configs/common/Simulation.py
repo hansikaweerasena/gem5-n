@@ -838,7 +838,7 @@ def run(options, root, testsys, cpu_class):
             )
         else:
             exit_event = benchCheckpoints(options, maxtick, cptdir)
-            if exit_event:
+            if exit_event.getCause() == "workbegin":
                 m5.stats.reset()
                 print("111111")
                 m5.switchCpus(testsys, switch_cpu_list)
