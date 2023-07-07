@@ -1,0 +1,10 @@
+#! /bin/sh
+echo "Done booting Linux";
+m5 exit;
+echo "Running on switch CPU";
+
+cd /home/gem5/parsec-benchmark;
+source env.sh;
+parsecmgmt -a run -p blackscholes -c gcc-hooks -i simsmall -n 4;
+sleep 5;
+m5 exit;
