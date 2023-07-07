@@ -592,7 +592,8 @@ def run(options, root, testsys, cpu_class):
             repeat_switch_cpu_list = [
                 (testsys.cpu[i], repeat_switch_cpus[i]) for i in range(np)
             ]
-# Hans - start     
+# Hans - start
+    testsys.exit_on_work_items = True     
     print("switching")
     switch_cpus = [
                     TimingSimpleCPU(switched_out=True, cpu_id=(i)) for i in range(np)
@@ -838,6 +839,7 @@ def run(options, root, testsys, cpu_class):
             )
         else:
             exit_event = benchCheckpoints(options, maxtick, cptdir)
+            print(exit_event.getCause())
             if exit_event.getCause() == "workbegin":
                 m5.stats.reset()
                 print("111111")
