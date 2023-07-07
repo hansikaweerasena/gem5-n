@@ -1,6 +1,5 @@
 #! /bin/bash
 echo "Done booting Linux";
-# m5 exit;
 echo "Running on switch CPU";
 
 cd /home/gem5/parsec-benchmark;
