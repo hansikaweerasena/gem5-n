@@ -202,6 +202,7 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
         net_msg_ptr = msg_ptr.get();
         DPRINTF(RubyNetwork, "Message: %s\n", (*net_msg_ptr));
 
+        //This debug flag is used to collect trace
         DPRINTF(RubyNetworkTrace, "Message: %s\n", (*net_msg_ptr));
 
 
@@ -270,6 +271,7 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
                     "inport[%d][%d] to outport [%d][%d].\n",
                     buffer->getIncomingLink(), vnet, outgoing, vnet);
 
+            //This debug flag is used to collect trace
             DPRINTF(RubyNetworkTrace, "Enqueuing net msg from "
                                  "inport[%d][%d] to outport [%d][%d].\n",
                     buffer->getIncomingLink(), vnet, outgoing, vnet);
