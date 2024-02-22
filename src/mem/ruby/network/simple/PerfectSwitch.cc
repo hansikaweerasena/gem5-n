@@ -46,6 +46,7 @@
 #include "base/cprintf.hh"
 #include "base/random.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/RubyNetworkTrace.hh"
 #include "mem/ruby/network/MessageBuffer.hh"
 #include "mem/ruby/network/simple/SimpleNetwork.hh"
 #include "mem/ruby/network/simple/Switch.hh"
@@ -201,6 +202,8 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
         net_msg_ptr = msg_ptr.get();
         DPRINTF(RubyNetwork, "Message: %s\n", (*net_msg_ptr));
 
+        DPRINTF(RubyNetworkTrace, "Message: %s\n", (*net_msg_ptr));
+
 
         output_links.clear();
         m_switch->getRoutingUnit().route(*net_msg_ptr, vnet,
@@ -265,6 +268,10 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
             // Enqeue msg
             DPRINTF(RubyNetwork, "Enqueuing net msg from "
                     "inport[%d][%d] to outport [%d][%d].\n",
+                    buffer->getIncomingLink(), vnet, outgoing, vnet);
+
+            DPRINTF(RubyNetworkTrace, "Enqueuing net msg from "
+                                 "inport[%d][%d] to outport [%d][%d].\n",
                     buffer->getIncomingLink(), vnet, outgoing, vnet);
 
             out_port.buffers[vnet]->enqueue(msg_ptr, current_time,
