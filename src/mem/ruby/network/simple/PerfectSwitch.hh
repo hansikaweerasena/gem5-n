@@ -54,6 +54,7 @@
 
 #include "mem/ruby/common/Consumer.hh"
 #include "mem/ruby/common/TypeDefines.hh"
+#include "mem/ruby/slicc_interface/Message.hh"
 
 namespace gem5
 {
@@ -100,6 +101,8 @@ class PerfectSwitch : public Consumer
 
     void operateVnet(int vnet);
     void operateMessageBuffer(MessageBuffer *b, int vnet);
+
+    void outputNetworkTrace(Message* net_msg_ptr, const std::string& inOut);
 
     const SwitchID m_switch_id;
     Switch * const m_switch;

@@ -41,6 +41,8 @@
 #include "mem/ruby/network/simple/PerfectSwitch.hh"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "base/cast.hh"
 #include "base/cprintf.hh"
@@ -51,12 +53,26 @@
 #include "mem/ruby/network/simple/SimpleNetwork.hh"
 #include "mem/ruby/network/simple/Switch.hh"
 #include "mem/ruby/slicc_interface/Message.hh"
+#include "mem/ruby/protocol/RequestMsg.hh"
+#include "mem/ruby/protocol/ResponseMsg.hh"
 
 namespace gem5
 {
 
 namespace ruby
 {
+
+
+std::string vectorToString(const std::vector<unsigned int>& vec) {
+    std::string result = "[";
+    for(size_t i = 0; i < vec.size(); ++i) {
+        result += std::to_string(vec[i]);
+        if (i < vec.size() - 1)
+            result += ", ";
+    }
+    result += "]";
+    return result;
+}
 
 const int PRIORITY_SWITCH_LIMIT = 128;
 
@@ -205,6 +221,11 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
         //This debug flag is used to collect trace
         DPRINTF(RubyNetworkTrace, "Message: %s\n", (*net_msg_ptr));
 
+        // This condition will filter input messages to network and add them to debug trace
+        if(buffer->getIncomingLink() == 1 || buffer->getIncomingLink() == 0 || buffer->getIncomingLink() == 2) {
+            outputNetworkTrace(net_msg_ptr, "In");
+        }
+
 
         output_links.clear();
         m_switch->getRoutingUnit().route(*net_msg_ptr, vnet,
@@ -276,6 +297,12 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
                                  "inport[%d][%d] to outport [%d][%d].\n",
                     buffer->getIncomingLink(), vnet, outgoing, vnet);
 
+
+            // This condition will filter output messages from the network and add them to debug trace
+            if(outgoing== 1 || outgoing == 0 || outgoing == 2) {
+                outputNetworkTrace(net_msg_ptr, "Out");
+            }
+
             out_port.buffers[vnet]->enqueue(msg_ptr, current_time,
                                            out_port.latency);
         }
@@ -327,6 +354,37 @@ void
 PerfectSwitch::print(std::ostream& out) const
 {
     out << "[PerfectSwitch " << m_switch_id << "]";
+}
+
+
+void
+PerfectSwitch::outputNetworkTrace(Message *net_msg_ptr, const std::string& inOut) 
+{
+    RequestMsg* requestMsgPtr = dynamic_cast<RequestMsg*>(net_msg_ptr);
+    if (requestMsgPtr != nullptr) {
+        DPRINTF(RubyNetworkTrace, "{cycle: %d, inOut: %s, resReq: req, src: %s, srcType: %s, des: %s, memAddr: %s, size: %s, type: %s}\n",
+        inOut, 
+        requestMsgPtr->getRequestor().num, 
+        requestMsgPtr->getRequestor().type, 
+        vectorToString(requestMsgPtr->getDestination().getAllDest()),
+        requestMsgPtr->getaddr(), 
+        requestMsgPtr->getMessageSize(),
+        requestMsgPtr->getType());
+    } else {
+        ResponseMsg* responseMsgPtr = dynamic_cast<ResponseMsg*>(net_msg_ptr);
+        if (responseMsgPtr != nullptr) {
+            DPRINTF(RubyNetworkTrace, "{cycle: %d, inOut: %s, resReq: res, src: %s, srcType: %s, des: %s, memAddr: %s, size: %s, type: %s}\n",
+            inOut, 
+            responseMsgPtr->getSender().num, 
+            responseMsgPtr->getSender().type, 
+            vectorToString(responseMsgPtr->getDestination().getAllDest()),
+            responseMsgPtr->getaddr(),
+            responseMsgPtr->getMessageSize(),
+            responseMsgPtr->getType());
+        } else {
+            DPRINTF(RubyNetworkTrace, "The message is neither a RequestMsg nor a ResponseMsg.\n");
+        }
+    }
 }
 
 } // namespace ruby
