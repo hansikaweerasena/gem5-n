@@ -218,9 +218,6 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
         net_msg_ptr = msg_ptr.get();
         DPRINTF(RubyNetwork, "Message: %s\n", (*net_msg_ptr));
 
-        //This debug flag is used to collect trace
-        DPRINTF(RubyNetworkTrace, "Message: %s\n", (*net_msg_ptr));
-
         // This condition will filter input messages to network and add them to debug trace
         if(buffer->getIncomingLink() == 1 || buffer->getIncomingLink() == 0 || buffer->getIncomingLink() == 2) {
             outputNetworkTrace(net_msg_ptr, "In");
@@ -292,12 +289,6 @@ PerfectSwitch::operateMessageBuffer(MessageBuffer *buffer, int vnet)
                     "inport[%d][%d] to outport [%d][%d].\n",
                     buffer->getIncomingLink(), vnet, outgoing, vnet);
 
-            //This debug flag is used to collect trace
-            DPRINTF(RubyNetworkTrace, "Enqueuing net msg from "
-                                 "inport[%d][%d] to outport [%d][%d].\n",
-                    buffer->getIncomingLink(), vnet, outgoing, vnet);
-
-
             // This condition will filter output messages from the network and add them to debug trace
             if(outgoing== 1 || outgoing == 0 || outgoing == 2) {
                 outputNetworkTrace(net_msg_ptr, "Out");
@@ -363,6 +354,7 @@ PerfectSwitch::outputNetworkTrace(Message *net_msg_ptr, const std::string& inOut
     RequestMsg* requestMsgPtr = dynamic_cast<RequestMsg*>(net_msg_ptr);
     if (requestMsgPtr != nullptr) {
         DPRINTF(RubyNetworkTrace, "{cycle: %d, inOut: %s, resReq: req, src: %s, srcType: %s, des: %s, memAddr: %s, size: %s, type: %s}\n",
+        curTick()/500,
         inOut, 
         requestMsgPtr->getRequestor().num, 
         requestMsgPtr->getRequestor().type, 
@@ -374,6 +366,7 @@ PerfectSwitch::outputNetworkTrace(Message *net_msg_ptr, const std::string& inOut
         ResponseMsg* responseMsgPtr = dynamic_cast<ResponseMsg*>(net_msg_ptr);
         if (responseMsgPtr != nullptr) {
             DPRINTF(RubyNetworkTrace, "{cycle: %d, inOut: %s, resReq: res, src: %s, srcType: %s, des: %s, memAddr: %s, size: %s, type: %s}\n",
+            curTick()/500,
             inOut, 
             responseMsgPtr->getSender().num, 
             responseMsgPtr->getSender().type, 
