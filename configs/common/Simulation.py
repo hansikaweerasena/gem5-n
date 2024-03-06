@@ -196,13 +196,14 @@ def run(options, root, testsys, cpu_class):
 
     print("**** REAL SIMULATION ****")
 
-    exit_event = m5.simulate()
+    # For se.y (only one simulate here line 200) and fe.py (two simulate with one after workbigin to have maxtick)
+    exit_event = m5.simulate(maxtick)
     if exit_event.getCause() == "workbegin":
         m5.stats.reset()
         print("Switching CPUs")
         m5.switchCpus(testsys, switch_cpu_list)
         print("CPU Switch Success")
-    exit_event = m5.simulate()            
+    # exit_event = m5.simulate()            
     m5.stats.dump()
     print(
         "Exiting @ tick %i because %s" % (m5.curTick(), exit_event.getCause())
