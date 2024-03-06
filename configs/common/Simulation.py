@@ -197,7 +197,7 @@ def run(options, root, testsys, cpu_class):
     print("**** REAL SIMULATION ****")
 
     # For se.y (only one simulate here line 200) and fe.py (two simulate with one after workbigin to have maxtick)
-    exit_event = m5.simulate(maxtick)
+    exit_event = m5.simulate(maxtick - m5.curTick())
     if exit_event.getCause() == "workbegin":
         m5.stats.reset()
         print("Switching CPUs")
