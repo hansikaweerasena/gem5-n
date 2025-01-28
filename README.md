@@ -71,10 +71,10 @@ For example, consider the second entry:
 2500: PerfectSwitch-2: {cycle: 5, inOut: Out, resReq: req, src: 0, srcType: L1Cache, des: [6], memAddr: 168576, size: Control, type: GET_INSTR}
 ```
 
-- **2500**: Simulation time (in cycles).
+- **2500**: Simulation time (in ticks).
 - **PerfectSwitch-2**: The switch where the event occurred.
 - **cycle**: The simulation cycle when the event occurred.
-- **inOut**: The direction of the packet (inbound or outbound).
+- **inOut**: The direction of the packet (inbound or outbound wrt to NoC).
 - **resReq**: Specifies whether the message is a response or a request.
 - **src**: Source node ID.
 - **srcType**: Type of the source (e.g., L1Cache, L2Cache).
