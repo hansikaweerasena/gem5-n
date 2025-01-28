@@ -29,7 +29,9 @@ git checkout trace-gem5
 
 ### 2. Build gem5
 
-Build gem5 using the following command:
+Refer gem5 documentation for setting up. For quick setup I prefer using docker (`./util` contains related Dockerfiles).
+
+Then build gem5 using the following command:
 ```bash
 scons build/X86/gem5.opt -j {no_cpus}
 ```
