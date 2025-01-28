@@ -18,7 +18,7 @@ The tool provides a bridge between gem5 simulation and NoC simulation, allowing 
 
 ## How to Use
 
-### Clone gem5 Repository
+### 1. Clone gem5 Repository
 
 Clone the gem5 repository and checkout the `trace-gem5` branch:
 ```bash
@@ -27,14 +27,14 @@ cd gem5
 git checkout trace-gem5
 ```
 
-### Build gem5
+### 2. Build gem5
 
 Build gem5 using the following command:
 ```bash
 scons build/X86/gem5.opt -j {no_cpus}
 ```
 
-### Run a Benchmark
+### 3. Run a Benchmark
 
 Run your benchmark as the workload for your simulation. Below is an example command for running the **FFT** benchmark in system emulation mode on a 64-node MPSoC:
 ```bash
@@ -49,7 +49,7 @@ This command generates a `64_FFT_trace.txt` log file containing the network trac
 
 ---
 
-## Trace Format
+#### Trace Format
 
 The log file includes network traces in the following format:
 ```text
@@ -62,7 +62,7 @@ The log file includes network traces in the following format:
 - Each log entry represents a single network trace extracted from the **boundary links** of the NoC. 
 - **Inbound** messages refer to packets entering the NoC, and **outbound** messages refer to packets leaving the NoC. Internal hops within the NoC are **not recorded**.
 
-### Example Entry Breakdown
+#### Example Trace Entry Breakdown
 
 For example, consider the second entry:
 ```text
@@ -80,6 +80,9 @@ For example, consider the second entry:
 - **memAddr**: Memory address associated with the request.
 - **size**: Size/type of the message.
 - **type**: Type of operation (e.g., GET_INSTR, GETS).
+
+
+### 4. Preprocess gem5 Trace
 
 ---
 
