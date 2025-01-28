@@ -86,6 +86,39 @@ For example, consider the second entry:
 
 ### 4. Preprocess gem5 Trace
 
+Here, the gem5 trace output is preprocessed to make the log concise and simple for NoC simulator input. For example, it will remove internal communication (L1, L2, directory in node memory controller) within nodes and return a simpler format. To run preprocessing, you can execute the following two commands:
+
+```bash
+mv ./64_FFT_trace.txt ./wired_data/raw/64_FFT_trace.txt  # move file
+
+python3 scripts/preprocessing.py 64 FFT
+```
+
+This will create two files in two directories:  
+1. `wired_data/intermediate/64_FFT_trace.txt`  
+2. `wired_data/processed/64_FFT_trace.txt`  
+
+The first file (intermediate) is for debugging purposes, while the processed file has the following format:
+
+```text
+out_msg=None: in_msg=[src=0, dest=2, size=2, addr=168576, type=GET_INSTR]: delay=0
+out_msg=[src=0, dest=2, size=2, addr=168576, type=GET_INSTR]: in_msg=[src=2, dest=0, size=5, addr=168576, type=DATA]: delay=72
+out_msg=[src=2, dest=0, size=5, addr=168576, type=DATA]: in_msg=[src=0, dest=0, size=2, addr=282112, type=EXCLUSIVE_UNBLOCK]: delay=83
+```
+
+Each entry here has three attributes: `out_msg`, `in_msg`, and `delay`.  
+- `out_msg` is the message leaving the NoC to a node.  
+- `in_msg` is the inbound message relevant to the corresponding `out_msg` from the same node.  
+- `delay` is the number of cycles between the two, representing the computation cycles until the next inbound message.  
+
+For example, in the second row:
+```text
+out_msg=[src=0, dest=2, size=2, addr=168576, type=GET_INSTR]: in_msg=[src=2, dest=0, size=5, addr=168576, type=DATA]: delay=72
+```
+- The outbound message originates from node `0` and is destined for node `2`.  
+- The corresponding inbound message originates from node `2` and returns to node `0`.  
+- The delay of `72` cycles represents the time taken for computation between the two messages.
+
 ---
 
 ## Limitations
