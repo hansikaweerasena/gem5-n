@@ -106,9 +106,9 @@ out_msg=[src=0, dest=2, size=2, addr=168576, type=GET_INSTR]: in_msg=[src=2, des
 out_msg=[src=2, dest=0, size=5, addr=168576, type=DATA]: in_msg=[src=0, dest=0, size=2, addr=282112, type=EXCLUSIVE_UNBLOCK]: delay=83
 ```
 
-Each entry here has three attributes: `out_msg`, `in_msg`, and `delay`.  
-- `out_msg` is the message leaving the NoC to a node.  
-- `in_msg` is the inbound message relevant to the corresponding `out_msg` from the same node.  
+The single entry will have the intution if `out_msg` is going into a Node (in other words going out of NoC) the in_msg will be the response coming out of same Node to NoC after stated number of delay cycles. Each entry here has three attributes: `out_msg`, `in_msg`, and `delay`.  
+- `out_msg` is the message leaving the NoC and into a Node (out w.r.t the NoC in other words its inbound w.r.t Node).  
+- `in_msg` is the inbound message relevant to the corresponding `out_msg` from the same node (Here in is w.r.t. NoC, message injected to NoC). 
 - `delay` is the number of cycles between the two, representing the computation cycles until the next inbound message.  
 
 For example, in the second row:
@@ -118,6 +118,11 @@ out_msg=[src=0, dest=2, size=2, addr=168576, type=GET_INSTR]: in_msg=[src=2, des
 - The outbound message originates from node `0` and is destined for node `2`.  
 - The corresponding inbound message originates from node `2` and returns to node `0`.  
 - The delay of `72` cycles represents the time taken for computation between the two messages.
+
+
+### 5. Running Trace-base simulation on an NoC Simulator
+
+
 
 ---
 
